@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "getfreeproxy"
+version = "1.0.0"
+description = "Python client for the FreeProxy API"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [ {name = "gfpcom"} ]
+
+dependencies = [
+    "httpx>=0.23"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "respx>=0.19",
+    "pytest-asyncio>=0.20"
+]
+
+[tool.setuptools]
+packages = ["getfreeproxy"]
