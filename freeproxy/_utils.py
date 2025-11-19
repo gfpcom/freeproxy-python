@@ -15,7 +15,6 @@ def extract_error_message(body_text: str, json_body: Optional[Dict] = None) -> s
                 return str(json_body.get("error"))
             if "message" in json_body:
                 return str(json_body.get("message"))
-            # fallback to first string-like field
             for k in ("detail", "code"):
                 if k in json_body:
                     return str(json_body.get(k))

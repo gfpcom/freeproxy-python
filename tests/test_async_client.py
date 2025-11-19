@@ -2,7 +2,7 @@ import respx
 import httpx
 import pytest
 
-from getfreeproxy.async_client import AsyncFreeProxyClient
+from freeproxy.async_client import AsyncClient
 
 
 @pytest.mark.asyncio
@@ -33,7 +33,7 @@ async def test_async_query_parses_proxies():
 
     respx.get(url).mock(return_value=httpx.Response(200, json=sample))
 
-    client = AsyncFreeProxyClient(api_key="KEY")
+    client = AsyncClient(api_key="KEY")
     out = await client.query()
     assert len(out) == 1
     p = out[0]

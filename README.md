@@ -1,81 +1,96 @@
-GetFreeProxy Python client
-=================================
+GetFreeProxy — Python client
+===========================
 
-Install
--------
+This is a small, typed Python client for the GetFreeProxy API (https://developer.getfreeproxy.com).
 
-```bash
-pip install .
-```
+About the API
+-------------
+The GetFreeProxy API exposes a simple endpoint to fetch public proxy servers:
 
-Usage (sync)
+- GET /v1/proxies — returns a JSON array of proxy objects. Optional query parameters include `country`, `protocol`, and `page`.
+
+Each proxy object contains fields such as `ip`, `port`, `protocol`, `proxyUrl`, `countryCode`, `anonymity`, `uptime`, and timestamps like `lastAliveAt`.
+
+Key behaviours of this client
+----------------------------
+- Minimal runtime dependency (`httpx`).
+- Synchronous `Client` and asynchronous `AsyncClient` classes with simple `query(...)` methods.
+- Returns a list of `Proxy` dataclasses (fields mapped to Pythonic names, e.g. `country_code`).
+- Raises typed exceptions on errors: `APIError`, `InvalidAPIKey`, `NetworkError`, `TimeoutError`, `ParseError`.
+
+Installation
 ------------
 
-```py
-from getfreeproxy import FreeProxyClient
+Install from PyPI (when published) or locally in editable mode during development:
 
-client = FreeProxyClient(api_key="YOUR_API_KEY")
+```bash
+pip install freeproxy-python
+# or local editable install for development:
+pip install -e .[dev]
+```
+
+Quick examples
+--------------
+
+Sync example:
+
+```py
+from freeproxy import Client
+
+client = Client(api_key="YOUR_API_KEY")
 proxies = client.query(country="US", protocol="https")
 for p in proxies:
-    print(p.proxy_url)
+    print(p.to_url())
 client.close()
 ```
 
-Usage (async)
--------------
+Async example:
 
 ```py
 import asyncio
-from getfreeproxy import AsyncFreeProxyClient
+from freeproxy import AsyncClient
 
 async def main():
-    client = AsyncFreeProxyClient(api_key="YOUR_API_KEY")
+    client = AsyncClient(api_key="YOUR_API_KEY")
     proxies = await client.query(country="US")
     for p in proxies:
-        print(p.proxy_url)
+        print(p.to_url())
     await client.aclose()
 
 asyncio.run(main())
 ```
 
-Tests
------
+Authentication
+--------------
+Provide your API key to the client constructor. The client sends `Authorization: Bearer <API_KEY>` in requests.
 
-Install dev dependencies and run tests:
+Query parameters
+----------------
+- `country`: ISO 3166-1 alpha-2 country code (e.g. `US`).
+- `protocol`: proxy protocol filter like `http`, `https`, `socks5`.
+- `page`: pagination page index (integer).
+
+Errors and exceptions
+---------------------
+- `APIError` is raised for non-2xx HTTP responses. The message attempts to surface the API `error` field when present, otherwise it falls back to the response body.
+- `InvalidAPIKey` is a subclass used when the API returns HTTP 401.
+- `NetworkError` and `TimeoutError` wrap transport-level failures.
+
+Notes and limitations
+---------------------
+- This client intentionally keeps runtime dependencies minimal and does not implement automatic retries. It also does not stream responses — responses are small (up to ~10 proxies per request).
+
+Testing
+-------
+Run the test suite locally with:
 
 ```bash
 pip install -e .[dev]
 pytest -q
 ```
 
-Publishing
-----------
+License
+-------
+MIT
 
-This repository uses a GitHub Actions workflow to publish to PyPI when a tag matching `vX.Y.Z` is pushed.
-
-Preparation (one-time):
-- Create a PyPI API token at https://pypi.org/ (Account > API tokens).
-- Add the token to GitHub repository secrets as `PYPI_API_TOKEN` (Repository Settings > Secrets).
-
-Release steps (recommended via CI):
-
-1. Bump `version` in `pyproject.toml` to the new release version (for example `0.0.2`).
-2. Create a signed or annotated tag and push it:
-
-```bash
-git tag -a v0.0.2 -m "Release v0.0.2"
-git push origin v0.0.2
-```
-
-When the tag is pushed, GitHub Actions will run `.github/workflows/release.yml` and publish the built distributions to PyPI using the `PYPI_API_TOKEN` secret.
-
-You can also build and upload locally (useful for dry-run checks):
-
-```bash
-python -m pip install --upgrade build twine
-python -m build
-python -m twine check dist/*
-# then upload (will require PyPI credentials or token):
-python -m twine upload dist/*
-```
 

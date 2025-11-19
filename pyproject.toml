@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "getfreeproxy"
+name = "freeproxy-python"
 version = "1.0.0"
 description = "Python client for the FreeProxy API"
 readme = "README.md"
@@ -23,4 +23,4 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["getfreeproxy"]
+packages = ["freeproxy"]

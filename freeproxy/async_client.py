@@ -6,7 +6,7 @@ from .exceptions import APIError, InvalidAPIKey, NetworkError, TimeoutError, Par
 from ._utils import build_headers, extract_error_message
 
 
-class AsyncFreeProxyClient:
+class AsyncClient:
     def __init__(self, api_key: str, *, base_url: str = "https://api.getfreeproxy.com", timeout: float = 30.0, user_agent: Optional[str] = None, session: Optional[httpx.AsyncClient] = None):
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
